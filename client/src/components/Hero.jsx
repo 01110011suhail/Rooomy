@@ -12,7 +12,7 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10">
-
+     {/*comments*/}
       </div>
     </div>
   );
