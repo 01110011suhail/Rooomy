@@ -35,4 +35,4 @@ This project is a **fully functional Hotel Booking System** built using the **ME
 * Handling online payments with Stripe
 * Implementing automated email notifications
 * Building and deploying a production-ready web app
-
+ using clerk for authentiacation
