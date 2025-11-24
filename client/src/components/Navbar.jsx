@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React,{useEffect,useState} from 'react';
 import { Link,useLocation,useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import {  useClerk, useUser,UserButton } from '@clerk/clerk-react';
@@ -18,8 +18,8 @@ const Navbar = () => {
     { name: 'About', path: '/' },
   ];
 
-  const [isScrolled, setIsScrolled] = React.useState(false);
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const {openSignIn}= useClerk()
   const {user}=useUser()
@@ -27,7 +27,15 @@ const Navbar = () => {
   const location = useLocation();
 
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if(location.pathname !== '/') {
+      setIsScrolled(true);
+      return;
+
+    }else{
+      setIsScrolled(false);
+    } 
+    setIsScrolled(prev => location.pathname !== '/' ? true : prev  );
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -73,7 +81,7 @@ const Navbar = () => {
         <button
           className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
             isScrolled ? 'text-black border-black' : 'text-white border-white'
-          } transition-all`}
+          } transition-all`} onClick={()=> navigate('/owner')}
         >
           Dashboard
         </button>
@@ -106,7 +114,13 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu Button */}
+
       <div className="flex items-center gap-3 md:hidden">
+              {user &&     <UserButton>
+            <UserButton.MenuItems>
+              <UserButton.Action label='My bookings' labelIcon={<BookIcon/>} onClick={()=> navigate('/') }/>
+            </UserButton.MenuItems>
+            </UserButton>}
         <img
           src={assets.menuIcon}
           alt="menu"
@@ -131,16 +145,16 @@ const Navbar = () => {
             </Link>
           ))}
 
-          <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all border-black">
+         {user && <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all border-black" onClick={()=> navigate('/owner')}>
             Dashboard
-          </button>
+          </button>}
 
-<button
+{!user &&<button
   onClick={() => openSignIn()}
   className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500"
 >
   Login
-</button>
+</button>}
 
 
         </div>
