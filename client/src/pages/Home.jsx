@@ -4,6 +4,7 @@ import Navbar from '../components/navbar.jsx'
 import FeaturedDestination from '../components/FeaturedDestination.jsx'
 import ExclusiveOffer from '../components/ExclusiveOffer.jsx'
 import Testimonial from '../components/Testimonial.jsx'
+import NewsLetter from '../components/NewsLetter.jsx'
 
 const Home = () => {
   return (
@@ -12,6 +13,7 @@ const Home = () => {
         <FeaturedDestination />
         <ExclusiveOffer />
         <Testimonial />
+        <NewsLetter />  
     </>
   )
 }
