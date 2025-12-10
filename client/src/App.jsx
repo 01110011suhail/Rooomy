@@ -7,6 +7,7 @@ import Navbar from './components/Navbar.jsx';
 import AllRooms from './pages/AllRooms.jsx';
 import MyBookings from './pages/MyBookings.jsx';
 import HotelReg from './components/HotelReg.jsx';
+import Layout from './pages/hotelOwner/Layout.jsx';
 
 const App = () => {
   const location = useLocation(); // <-- Fix: useLocation hook
@@ -22,6 +23,9 @@ const App = () => {
           <Route path="/rooms" element={<AllRooms />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/owner" element={<Layout />} >
+          
+          </Route>
           {/* <Route path="/owner" element={<OwnerDashboard />} /> */}
         </Routes>
       </div>
