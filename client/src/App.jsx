@@ -1,13 +1,14 @@
 import React from 'react';
-import Navbar from './components/navbar.jsx';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Footer from './components/Footer.jsx';
-import AllRooms from './pages/AllRooms.jsx';
 import RoomDetails from './pages/RoomDetails.jsx';
+import Navbar from './components/Navbar.jsx';
+import AllRooms from './pages/AllRooms.jsx';
+import MyBookings from './pages/MyBookings.jsx';
 
 const App = () => {
-  const location = useLocation();
+  const location = useLocation(); // <-- Fix: useLocation hook
   const isOwnerPath = location.pathname.includes("owner");
 
   return (
@@ -15,14 +16,14 @@ const App = () => {
       {!isOwnerPath && <Navbar />}
       <div className='min-h-[70vh]'>
         <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/rooms" element={<AllRooms />} />
-        <Route path="/rooms/:id" element={<RoomDetails />} />
-        {/* <Route path="/owner" element={<OwnerDashboard />} /> */}
-      </Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/rooms" element={<AllRooms />} />
+          <Route path="/rooms/:id" element={<RoomDetails />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          {/* <Route path="/owner" element={<OwnerDashboard />} /> */}
+        </Routes>
       </div>
       <Footer />  
-
     </div>
   );
 };
