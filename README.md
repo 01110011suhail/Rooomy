@@ -36,3 +36,12 @@ This project is a **fully functional Hotel Booking System** built using the **ME
 * Implementing automated email notifications
 * Building and deploying a production-ready web app
  using clerk for authentiacation
+
+
+// got error during deploying 
+That’s the problem ✅
+Node v24.11.0 is NOT supported by Vercel.
+
+Vercel currently supports Node 18.x and 20.x.
+Using Node 24 will cause build errors / deployment failures, no matter how correct your code is.
+Rename the file from vercel.js to vercel.json

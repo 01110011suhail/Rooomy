@@ -1,14 +1,17 @@
- import mangoose from "mongoose";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
- const connectDB = async () =>{
-    try{
-        mangoose.connection.on('connected', ()=> console.log("Database Connected")
-    );
-        await mangoose.connect(`${process.env.MONGODB_URI}/hotel-booking`)
-    }catch (error){
-        console.log(error.message);
+dotenv.config();
 
-    }
- }
+const connectDB = async () => {
+  try {
+    mongoose.connection.on("connected", () => console.log("Database Connected"));
+    mongoose.connection.on("error", (err) => console.log("Database connection error:", err));
 
- export default connectDB;
+    await mongoose.connect(`${process.env.MONGODB_URI}/hotel-booking`);
+  } catch (error) {
+    console.log("Connection failed:", error.message);
+  }
+};
+
+export default connectDB;

@@ -19,5 +19,5 @@ createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <App />
   </BrowserRouter>
-  </ClerkProvider >  ,
+  </ClerkProvider >  
 )

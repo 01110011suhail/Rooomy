@@ -1,24 +1,49 @@
-import express from "express"
-import "dotenv/config";
+import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./configs/db.js";
-import { clerkMiddleware } from '@clerk/express'
 import clerkWebhooks from "./controllers/clerkWebhooks.js";
+import userRouter from "./routes/userRoutes.js";
+import connectCloudinary from "./configs/cloudinary.js";
+import hotelRouter from "./routes/hotelRoutes.js";
+import roomRouter from "./routes/roomRoutes.js";
 
 
 connectDB()
-const app =express()
-app.use(cors())
+connectCloudinary();
 
-//middleware
-app.use(express.json())
-app.use(clerkMiddleware())
+dotenv.config();
 
-//API to listen to Clerk Webhooks
-app.use("/api/clerk", clerkWebhooks);
-
-app.get('/',(req,res)=> res.send("API is Working"))
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, ()=> console.log(`server running on port ${PORT}`));
+// Middleware
+app.use(cors());
 
+// Webhook route — RAW body
+app.post(
+  "/api/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhooks
+);
+
+// Normal JSON middleware for other APIs
+app.use(express.json());
+
+// Test route
+app.get("/", (req, res) => res.send("API is working"));
+app.use("/api/user", userRouter );
+app.use("/api/hotels", hotelRouter );
+app.use("/api/rooms", roomRouter );
+
+// Start server
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  } catch (error) {
+    console.error("Failed to start server:", error.message);
+  }
+};
+
+startServer();
