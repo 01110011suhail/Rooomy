@@ -10,10 +10,10 @@ import roomRouter from "./routes/roomRoutes.js";
 import bookingRouter from "./routes/bookingRoutes.js";
 
 
+dotenv.config();
 connectDB()
 connectCloudinary();
 
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,7 +41,7 @@ app.use("/api/booking", bookingRouter );
 // Start server
 const startServer = async () => {
   try {
-    await connectDB();
+    // await connectDB();
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (error) {
     console.error("Failed to start server:", error.message);

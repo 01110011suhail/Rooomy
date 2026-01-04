@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true },
     image: { type: String, required: true },
     role: { type: String, enum: ["user", "hotelOwner"], default: "user" },
-    recentSearchedCities: [{ type: String, required: true}],
+    recentSearchCities: { type: [String], default: [] }, // default empty array
   },
   { timestamps: true }
 );

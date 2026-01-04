@@ -15,7 +15,7 @@ export const getUserData = async (req, res) => {
 export const storeRecentSearchedCities = async (req, res) => {
     try{
         const { recentSearchCity } = req.body;
-        const user = await req.user;
+        const user =  req.user;
 
         if(user.recentSearchCities.length <3){
             user.recentSearchCities.push(recentSearchCity);

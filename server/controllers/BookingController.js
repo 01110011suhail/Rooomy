@@ -1,4 +1,4 @@
-import Booking from '../models/BookingModel.js';
+import Booking from '../models/Booking.js';
 import Room from '../models/Room.js';
 import Hotel from '../models/Hotel.js';
 
@@ -29,7 +29,7 @@ export const checkAvailabilityAPI = async (req, res) => {
         res.json({ success: true, isAvailable });
     } catch (error) {
         res.json({ success: false, message: error.message });
-    }
+    }   
 }
 
 
