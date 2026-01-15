@@ -30,7 +30,7 @@ export const checkAvailabilityAPI = async (req, res) => {
     } catch (error) {
         res.json({ success: false, message: error.message });
     }   
-}
+} //changes
 
 
 //Api to create a booking
