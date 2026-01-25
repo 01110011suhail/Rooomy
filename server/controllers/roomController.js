@@ -69,7 +69,8 @@ export const getOwnerRooms = async (req, res) => {
 }
 
 //API to get togglle room availability 
-export const toggleRoomAvailability = async (req, res) => {    
+export const toggleRoomAvailability = async (req, res) =>
+     {    
 
     try {
         const { roomId } = req.body;
@@ -81,4 +82,4 @@ export const toggleRoomAvailability = async (req, res) => {
     } catch (error) {
         res.json({ success: false, message: error.message });
     }
-}
+}   
