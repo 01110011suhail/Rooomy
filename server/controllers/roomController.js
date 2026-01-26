@@ -79,7 +79,7 @@ export const toggleRoomAvailability = async (req, res) =>
         await roomData.save();
         res.json({ success: true, message: "Room availability updated successfully" });
         
-    } catch (error) {
+    } catch (error) { // Error handling
         res.json({ success: false, message: error.message });
     }
-}   
+}    
