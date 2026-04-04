@@ -8,9 +8,13 @@ const connectDB = async () => {
     mongoose.connection.on("connected", () => console.log("Database Connected"));
     mongoose.connection.on("error", (err) => console.log("Database connection error:", err));
 
-    await mongoose.connect(`${process.env.MONGODB_URI}/hotel-booking`);
+    // Connect using only the URI
+    await mongoose.connect(process.env.MONGODB_URI);
+
+    console.log("MongoDB connection successful!");
   } catch (error) {
     console.log("Connection failed:", error.message);
+    process.exit(1);
   }
 };
 

@@ -1,68 +1,123 @@
-import React from 'react';
-import heroImage from '../assets/heroImage.png';
-import { assets, cities } from '../assets/assets';
+import React, { useState, useEffect } from "react";
+import { assets, cities } from "../assets/assets";
 
 const Hero = () => {
+  const today = new Date().toISOString().split("T")[0];
+  const [checkIn, setCheckIn] = useState(today);
+  const [checkOut, setCheckOut] = useState(today);
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+
+  // Background slider effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgIndex((prev) => (prev + 1) % assets.heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div
-      className="flex flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-32 text-white bg-no-repeat bg-cover bg-center h-screen relative"
-      style={{ backgroundImage: `url(${heroImage})` }}
+    <div className="relative h-screen overflow-hidden text-white">
 
-    >
-      <p className='bg-[#49B9FF]/50 px-3.5 py-1 rounded-full mt-20'>The Ultimate Hotel</p>
-      <h1 className='font-playfair text-2xl md:text-5xl md:text-[56px] md:leading-[56px] font-bold md:font-extrabold max-w-xl mt-4'>Discover Your Perfect Destination</h1>
-      <p className='max-w-130 mt-2 text-sm md:text-base'>Unparalleled luxury awaits. Experience the best of the town — start your journey today.
+      {/* Slider Container */}
+      <div
+        className="absolute top-0 left-0 flex h-full w-full transition-transform duration-1000 will-change-transform"
+        style={{ transform: `translateX(-${currentBgIndex * 100}%)` }}
+      >
+        {assets.heroImages.map((img, index) => (
+          <div
+            key={index}
+            className="w-full h-full flex-shrink-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${img})` }}
+            aria-hidden="true"
+          />
+        ))}
+      </div>
 
+      {/* Hero Content */}
+      <div className="relative flex flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-32 h-full">
+<p className="bg-[#49B9FF]/50 px-3.5 py-1 rounded-full mt-20">Escape in Style</p>
+<h1 className="font-playfair text-2xl md:text-5xl lg:text-[56px] font-bold md:font-extrabold max-w-xl mt-4">
+  A Stay You’ll Never Forget
+</h1>
+<p className="max-w-[520px] mt-2 text-sm md:text-base">
+  Experience luxury, comfort, and serenity all in one place. Your perfect getaway starts here.
+</p>
 
-      </p>
-        <form className='bg-white text-gray-500 rounded-lg px-6 py-4 mt-8 flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto'>
+        {/* Search Form */}
+        <form className="bg-white/70 backdrop-blur-md text-gray-700 rounded-2xl px-6 md:px-8 py-6 mt-10 flex flex-col md:flex-row gap-4 md:gap-6 shadow-2xl max-w-5xl mx-auto transition-all duration-300">
+          
+          {/* Destination */}
+          <div className="flex-1 relative">
+            <label htmlFor="destinationInput" className="absolute -top-3 left-4 bg-white/70 px-1 text-gray-600 text-sm font-medium">Destination</label>
+            <img src={assets.calenderIcon} alt="" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 opacity-70 pointer-events-none" />
+            <input
+              list="destinations"
+              id="destinationInput"
+              type="text"
+              className="w-full rounded-xl border border-gray-200 bg-white/50 px-10 py-3 text-sm outline-none placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+              placeholder="Where to?"
+              required
+              aria-label="Destination"
+            />
+            <datalist id="destinations">
+              {cities.map((city, index) => (
+                <option value={city} key={index} />
+              ))}
+            </datalist>
+          </div>
 
-            <div>
-                <div className='flex items-center gap-2'>
-                  <img src={assets.calenderIcon} alt="calendarICon" className='h-4' />
- 
-                    <label htmlFor="destinationInput">Destination</label>
-                </div>
-                
-                <input list='destinations' id="destinationInput" type="text" className=" rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none" placeholder="Type here" required />
-                <datalist id='destinations'>
-                    {cities.map((city, index) => (
-                      <option value={city} key={index} />
-                    ))}
+          {/* Check-in */}
+          <div className="flex-1 relative">
+            <label htmlFor="checkIn" className="absolute -top-3 left-4 bg-white/70 px-1 text-gray-600 text-sm font-medium">Check in</label>
+            <img src={assets.calenderIcon} alt="" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 opacity-70 pointer-events-none" />
+            <input
+              id="checkIn"
+              type="date"
+              className="w-full rounded-xl border border-gray-200 bg-white/50 px-10 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+              value={checkIn}
+              min={today}
+              onChange={(e) => {
+                setCheckIn(e.target.value);
+                if (e.target.value > checkOut) setCheckOut(e.target.value);
+              }}
+            />
+          </div>
 
-                </datalist>
-            </div>
+          {/* Check-out */}
+          <div className="flex-1 relative">
+            <label htmlFor="checkOut" className="absolute -top-3 left-4 bg-white/70 px-1 text-gray-600 text-sm font-medium">Check out</label>
+            <img src={assets.calenderIcon} alt="" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 opacity-70 pointer-events-none" />
+            <input
+              id="checkOut"
+              type="date"
+              className="w-full rounded-xl border border-gray-200 bg-white/50 px-10 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+              value={checkOut}
+              min={checkIn}
+              onChange={(e) => setCheckOut(e.target.value)}
+            />
+          </div>
 
-            <div>
-                <div className='flex items-center gap-2'>
-                  <img src={assets.calenderIcon} alt="calendarICon" className='h-4' />
+          {/* Guests */}
+          <div className="flex-1 relative">
+            <label htmlFor="guests" className="absolute -top-3 left-4 bg-white/70 px-1 text-gray-600 text-sm font-medium">Guests</label>
+            <input
+              min={1}
+              max={4}
+              id="guests"
+              type="number"
+              className="w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+              defaultValue={1}
+              aria-label="Number of guests"
+            />
+          </div>
 
-                    <label htmlFor="checkIn">Check in</label>
-                </div>
-                <input id="checkIn" type="date" className=" rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none" />
-            </div>
-
-            <div>
-                <div className='flex items-center gap-2'>
-                  <img src={assets.calenderIcon} alt="calendarICon" className='h-4' />
-
-                    <label htmlFor="checkOut">Check out</label>
-                </div>
-                <input id="checkOut" type="date" className=" rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none" />
-            </div>
-
-            <div className='flex md:flex-col max-md:gap-2 max-md:items-center'>
-                <label htmlFor="guests">Guests</label>
-                <input min={1} max={4} id="guests" type="number" className=" rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none  max-w-16" placeholder="0" />
-            </div>
-
-            <button className='flex items-center justify-center gap-1 rounded-md bg-black py-3 px-4 text-white my-auto cursor-pointer max-md:w-full max-md:py-1' >
-                  <img src={assets.searchIcon} alt="searchICon" className='h-7' />
-
-                <span>Search</span>
-            </button>
+          {/* Search Button */}
+          <button className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 px-6 text-white font-semibold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full md:w-auto">
+            <img src={assets.searchIcon} alt="" className="h-6" />
+            <span>Search</span>
+          </button>
         </form>
-
+      </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import logo from './logo.svg'
+import logo from './logo.png'
 import searchIcon from './searchIcon.svg'
 import userIcon from './userIcon.svg'
 import calenderIcon from './calenderIcon.svg'
@@ -37,11 +37,27 @@ import listIcon from "./listIcon.svg";
 import uploadArea from "./uploadArea.svg";
 import totalBookingIcon from "./totalBookingIcon.svg";
 import totalRevenueIcon from "./totalRevenueIcon.svg";
+import logo2 from "./logo2.png";
+import hero1 from './heroimg1.png';
+import hero2 from './heroimg2.png';
+import hero3 from './heroimg3.png';
+import hero4 from './heroimg4.png';
+import hero5 from './heroimg5.png';
+import hero6 from './heroimg6.png';
+import hero7 from './heroimg7.png';
+import hero8 from './heroimg8.png';
+import Roomy from './Roomy.gif';
+
+
 
 
 export const assets = {
+      heroImages: [hero1, hero2, hero3, hero4, hero5, hero6, hero7, hero8],
+
     logo,
+    logo2,
     searchIcon,
+    Roomy,
     userIcon,
     calenderIcon,
     locationIcon,

@@ -1,41 +1,44 @@
-import React, { useState } from 'react'
-import { assets, cities } from '../assets/assets'
-import { useAppContext } from '../context/AppContext.jsx'
-import toast from 'react-hot-toast'
+import React, { useState } from 'react';
+import { assets, cities } from '../assets/assets';
+import { useAppContext } from '../context/AppContext.jsx';
+import toast from 'react-hot-toast';
 
 const HotelReg = () => {
-  const { setShowHotelReg, axios, getToken, setIsOwner } = useAppContext()
+  const { setShowHotelReg, axios, getToken, setIsOwner } = useAppContext();
 
-  const [name, setName] = useState('')
-  const [contact, setContact] = useState('')
-  const [address, setAddress] = useState('')
-  const [city, setCity] = useState('')
+  const [name, setName] = useState('');
+  const [contact, setContact] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
 
   const onSubmitHandler = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     try {
-      const { data } = await axios.post(
-        '/api/hotels/',
-        { name, contact, address, city },
-        {
-          headers: {
-            Authorization: `Bearer ${await getToken()}`
-          }
-        }
-      )
+      // 1️⃣ Get Clerk token
+      const token = await getToken();
 
+      // 2️⃣ Send POST request to correct backend endpoint
+      const { data } = await axios.post(
+        '/api/hotels/register', // ✅ correct route
+        { name, contact, address, city },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // 3️⃣ Handle response
       if (data.success) {
-        toast.success(data.message)
-        setIsOwner(true)
-        setShowHotelReg(false)
+        toast.success(data.message || 'Hotel registered successfully!');
+        setIsOwner(true); // Update user as hotel owner
+        setShowHotelReg(false); // Close modal
       } else {
-        toast.error(data.message)
+        toast.error(data.message || 'Failed to register hotel');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Something went wrong')
+      const errMsg = error.response?.data?.message || error.message || 'Something went wrong';
+      toast.error(errMsg);
+      console.error('Hotel registration error:', error);
     }
-  }
+  };
 
   return (
     <div
@@ -114,7 +117,7 @@ const HotelReg = () => {
           </div>
 
           {/* City */}
-          <div className="w-full mt-4 max-w-60 mr-auto">
+          <div className="w-full mt-4 max-w-xs mr-auto">
             <label htmlFor="city" className="font-medium text-gray-500">
               City
             </label>
@@ -128,9 +131,9 @@ const HotelReg = () => {
               <option value="" disabled>
                 Select City
               </option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
+              {cities.map((c, index) => (
+                <option key={`${c}-${index}`} value={c}>
+                  {c}
                 </option>
               ))}
             </select>
@@ -145,7 +148,7 @@ const HotelReg = () => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default HotelReg
+export default HotelReg;

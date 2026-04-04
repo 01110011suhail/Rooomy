@@ -1,8 +1,10 @@
-import express from 'express';
-import { protect } from '../middleware/authMiddleWare.js';
-import { registerHotel } from '../controllers/hotelController.js';
+import express from "express";
+import { protect } from "../middleware/authMiddleWare.js";
+import { registerHotel, getHotels } from "../controllers/hotelController.js";
+
 const hotelRouter = express.Router();
 
-// Route to register a new hotel
-hotelRouter.post('/register', protect, registerHotel);  
+hotelRouter.post("/register", protect, registerHotel);
+hotelRouter.get("/", getHotels);
+
 export default hotelRouter;

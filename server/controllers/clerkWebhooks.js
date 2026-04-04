@@ -1,3 +1,4 @@
+// controllers/clerkWebhooks.js
 import User from "../models/User.js";
 import { Webhook } from "svix";
 
@@ -11,18 +12,17 @@ const clerkWebhooks = async (req, res) => {
       "svix-signature": req.headers["svix-signature"],
     };
 
-    // 🔥 RAW BODY verification
+    // verify raw body
     whook.verify(req.body.toString(), headers);
 
     const { data, type } = JSON.parse(req.body.toString());
 
     const userData = {
-      _id: data.id,
+      clerkId: data.id,
       email: data.email_addresses?.[0]?.email_address || "",
       username: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
-      image: data.image_url || "",
       role: "user",
-      recentSearchedCities: [],
+      recentSearchCities: [],
     };
 
     if (type === "user.created") {
@@ -30,14 +30,11 @@ const clerkWebhooks = async (req, res) => {
     }
 
     if (type === "user.updated") {
-      await User.findByIdAndUpdate(data.id, userData, {
-        new: true,
-        upsert: true,
-      });
+      await User.findOneAndUpdate({ clerkId: data.id }, userData, { upsert: true, new: true });
     }
 
     if (type === "user.deleted") {
-      await User.findByIdAndDelete(data.id);
+      await User.findOneAndDelete({ clerkId: data.id });
     }
 
     res.status(200).json({ success: true });
