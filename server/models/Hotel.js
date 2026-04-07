@@ -1,3 +1,4 @@
+// models/Hotel.js
 import mongoose from "mongoose";
 
 const hotelSchema = new mongoose.Schema(
@@ -6,7 +7,9 @@ const hotelSchema = new mongoose.Schema(
     address: { type: String, required: true },
     contact: { type: String, required: true },
     city: { type: String, required: true },
-    owner: { type: String, ref: "User", required: true }, // ✅ FIXED
+
+    // ✅ FIXED: must be ObjectId (NOT String)
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );

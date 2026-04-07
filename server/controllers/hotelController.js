@@ -1,39 +1,64 @@
-// controllers/hotelController.js
 import Hotel from "../models/Hotel.js";
 import User from "../models/User.js";
 
+// ✅ Register hotel
 export const registerHotel = async (req, res) => {
   try {
     const { name, address, contact, city } = req.body;
-    const ownerClerkId = req.user.clerkId;
 
-    // check if hotel already registered
     const existingHotel = await Hotel.findOne({ owner: req.user._id });
     if (existingHotel) {
-      return res.status(400).json({ success: false, message: "Hotel already registered" });
+      return res.status(400).json({
+        success: false,
+        message: "Hotel already registered",
+      });
     }
 
-    // create hotel
-    const hotel = await Hotel.create({ name, address, contact, city, owner: req.user._id });
+    const hotel = await Hotel.create({
+      name,
+      address,
+      contact,
+      city,
+      owner: req.user._id,
+    });
 
-    // update user role
-    req.user.role = "hotelOwner";
-    await req.user.save();
+    await User.findByIdAndUpdate(req.user._id, {
+      role: "hotelOwner",
+    });
 
-    res.status(201).json({ success: true, message: "Hotel registered successfully", hotel });
+    res.status(201).json({
+      success: true,
+      message: "Hotel registered successfully",
+      hotel,
+    });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// GET all hotels
+// ✅ Get all hotels
 export const getHotels = async (req, res) => {
   try {
     const hotels = await Hotel.find().populate("owner", "username email");
     res.json({ success: true, hotels });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// ✅ Get my hotel
+export const getMyHotel = async (req, res) => {
+  try {
+    const hotel = await Hotel.findOne({ owner: req.user._id });
+
+    res.json({
+      success: true,
+      hotel,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
   }
 };

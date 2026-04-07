@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { assets, cities } from "../assets/assets";
+import { useAppContext } from "../context/AppContext.jsx";
 
 const Hero = () => {
   const today = new Date().toISOString().split("T")[0];
   const [checkIn, setCheckIn] = useState(today);
   const [checkOut, setCheckOut] = useState(today);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const [destination, setDestination] = useState("");
+
+  const { navigate, getToken, axios, setSearchCities } = useAppContext();
 
   // Background slider effect
   useEffect(() => {
@@ -15,9 +19,32 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const onSearch = async (e) => {
+    e.preventDefault();
+
+    // Navigate to rooms page
+    navigate(`/rooms?destination=${destination}&checkIn=${checkIn}&checkOut=${checkOut}`);
+
+    try {
+      // Store recent searched city
+      const token = await getToken();
+      await axios.post(
+        "/api/user/store-recent-search",
+        { recentSearchedCity: destination },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setSearchCities((prevSearchCities) => {
+        const updated = [destination, ...prevSearchCities.filter((c) => c !== destination)];
+        return updated.slice(0, 5); // Keep last 5 cities
+      });
+    } catch (error) {
+      console.error("Error storing recent search:", error);
+    }
+  };
+
   return (
     <div className="relative h-screen overflow-hidden text-white">
-
       {/* Slider Container */}
       <div
         className="absolute top-0 left-0 flex h-full w-full transition-transform duration-1000 will-change-transform"
@@ -35,22 +62,26 @@ const Hero = () => {
 
       {/* Hero Content */}
       <div className="relative flex flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-32 h-full">
-<p className="bg-[#49B9FF]/50 px-3.5 py-1 rounded-full mt-20">Escape in Style</p>
-<h1 className="font-playfair text-2xl md:text-5xl lg:text-[56px] font-bold md:font-extrabold max-w-xl mt-4">
-  A Stay You’ll Never Forget
-</h1>
-<p className="max-w-[520px] mt-2 text-sm md:text-base">
-  Experience luxury, comfort, and serenity all in one place. Your perfect getaway starts here.
-</p>
+        <p className="bg-[#49B9FF]/50 px-3.5 py-1 rounded-full mt-20">Escape in Style</p>
+        <h1 className="font-playfair text-2xl md:text-5xl lg:text-[56px] font-bold md:font-extrabold max-w-xl mt-4">
+          A Stay You’ll Never Forget
+        </h1>
+        <p className="max-w-[520px] mt-2 text-sm md:text-base">
+          Experience luxury, comfort, and serenity all in one place. Your perfect getaway starts here.
+        </p>
 
         {/* Search Form */}
-        <form className="bg-white/70 backdrop-blur-md text-gray-700 rounded-2xl px-6 md:px-8 py-6 mt-10 flex flex-col md:flex-row gap-4 md:gap-6 shadow-2xl max-w-5xl mx-auto transition-all duration-300">
-          
+        <form
+          onSubmit={onSearch}
+          className="bg-white/70 backdrop-blur-md text-gray-700 rounded-2xl px-6 md:px-8 py-6 mt-10 flex flex-col md:flex-row gap-4 md:gap-6 shadow-2xl max-w-5xl mx-auto transition-all duration-300"
+        >
           {/* Destination */}
           <div className="flex-1 relative">
             <label htmlFor="destinationInput" className="absolute -top-3 left-4 bg-white/70 px-1 text-gray-600 text-sm font-medium">Destination</label>
             <img src={assets.calenderIcon} alt="" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 opacity-70 pointer-events-none" />
             <input
+              onChange={(e) => setDestination(e.target.value)}
+              value={destination}
               list="destinations"
               id="destinationInput"
               type="text"

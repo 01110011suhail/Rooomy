@@ -1,6 +1,6 @@
 // AppContext.jsx
 import axios from "axios";
-import { createContext, use, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useUser, useAuth } from "@clerk/clerk-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -19,56 +19,72 @@ export const AppProvider = ({ children }) => {
   const [searchCities, setSearchCities] = useState([]);
   const [rooms, setRooms] = useState([]);
 
+  const currency = import.meta.env.VITE_CURRENCY || "$";
+
+  // ✅ Fetch rooms
   const fetchRooms = async () => {
     try {
       const { data } = await axios.get("/api/rooms");
       if (data.success) {
         setRooms(data.rooms);
       } else {
-        toast.error("Failed to fetch rooms. Retrying...");
         setTimeout(fetchRooms, 3000);
       }
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Failed to fetch rooms";
-      console.error("Fetch rooms error:", errMsg);
+      console.error("Fetch rooms error:", error.message);
       setTimeout(fetchRooms, 5000);
     }
-  }
+  };
 
-  const currency = import.meta.env.VITE_CURRENCY || "$";
-
-  // ✅ Fetch user role & recent searches
+  // ✅ Fetch user data (NO owner logic here ❗)
   const fetchUser = async () => {
     if (!user) return;
 
     try {
-      const token = await getToken(); // Clerk token
+      const token = await getToken();
+
       const { data } = await axios.get("/api/user", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (data.success) {
-        setIsOwner(data.role === "hotelOwner");
         setSearchCities(data.recentSearchCities || []);
       } else {
-        toast.error("Failed to fetch user data. Retrying...");
-        setTimeout(fetchUser, 3000); // Retry in 3 sec
+        setTimeout(fetchUser, 3000);
       }
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Failed to fetch user";
-      console.error("Fetch user error:", errMsg);
-      // Retry silently without spamming toast
+      console.error("Fetch user error:", error.message);
       setTimeout(fetchUser, 5000);
     }
   };
 
-  // 🔥 Run fetchUser only when Clerk user is available
+  // ✅ ONLY SOURCE OF TRUTH FOR OWNER
+  const fetchOwnerStatus = async () => {
+    if (!user) return;
+
+    try {
+      const token = await getToken();
+
+      const { data } = await axios.get("/api/hotels/my-hotel", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // ✅ FINAL FIX
+      setIsOwner(!!data.hotel);
+    } catch (error) {
+      console.error("Owner check error:", error.message);
+    }
+  };
+
+  // ✅ Run when user logs in
   useEffect(() => {
     if (user) {
       fetchUser();
+      fetchOwnerStatus(); // 🔥 MOST IMPORTANT
     }
   }, [user]);
 
+  // ✅ Fetch rooms once
   useEffect(() => {
     fetchRooms();
   }, []);

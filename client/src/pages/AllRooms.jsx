@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { assets, facilityIcons, roomsDummyData } from "../assets/assets.js";
 import StarRating from "../components/StarRating";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
+// ---------------- UI COMPONENTS ----------------
 const Checkbox = ({ label, selected = false, onChange = () => {} }) => (
   <label className="flex gap-3 items-center cursor-pointer mt-2 text-sm">
     <input
@@ -26,18 +27,18 @@ const RadioButton = ({ label, selected = false, onChange = () => {} }) => (
   </label>
 );
 
+// ---------------- MAIN COMPONENT ----------------
 const AllRooms = () => {
   const navigate = useNavigate();
-  const [openFilter, setOpenFilter] = useState(false);
+  const [searchParam, setSearchParam] = useSearchParams();
+  const { rooms, currency } = useAppContext();
 
-  // -----------------------
-  // FILTER STATE
-  // -----------------------
+  const [openFilter, setOpenFilter] = useState(false);
   const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
   const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
   const [selectedSort, setSelectedSort] = useState("");
 
-  // Filter options
+  // ---------------- OPTIONS ----------------
   const roomTypes = ["Single Room", "Double Room", "Deluxe Room", "Family Suite"];
   const priceRanges = ["0 to 500", "500 to 1000", "1000 to 2000", "2000 to 3000"];
   const sortOptions = [
@@ -48,15 +49,12 @@ const AllRooms = () => {
     "Newest First",
   ];
 
-  // Helper to parse price range
+  // ---------------- HELPERS ----------------
   const parseRange = (range) => {
     const [min, max] = range.split(" to ").map(Number);
     return { min, max };
   };
 
-  // -----------------------
-  // UPDATE FILTER FUNCTIONS
-  // -----------------------
   const toggleRoomType = (checked, label) => {
     setSelectedRoomTypes((prev) =>
       checked ? [...prev, label] : prev.filter((item) => item !== label)
@@ -64,7 +62,7 @@ const AllRooms = () => {
   };
 
   const togglePriceRange = (checked, label) => {
-    const cleanLabel = label.replace("$ ", "");
+    const cleanLabel = label.replace(`${currency} `, "");
     setSelectedPriceRanges((prev) =>
       checked ? [...prev, cleanLabel] : prev.filter((item) => item !== cleanLabel)
     );
@@ -74,20 +72,29 @@ const AllRooms = () => {
     setSelectedRoomTypes([]);
     setSelectedPriceRanges([]);
     setSelectedSort("");
+    setSearchParam({});
   };
 
-  // -----------------------
-  // FILTER + SORT LOGIC
-  // -----------------------
+  // ---------------- FILTER + SORT ----------------
   const filteredRooms = useMemo(() => {
-    let filtered = [...roomsDummyData];
+    let filtered = [...rooms];
 
+    // Destination filter
+    const destination = searchParam.get("destination");
+    if (destination) {
+      filtered = filtered.filter((room) =>
+        room.hotel.city.toLowerCase().includes(destination.toLowerCase())
+      );
+    }
+
+    // Room type filter
     if (selectedRoomTypes.length > 0) {
       filtered = filtered.filter((room) =>
         selectedRoomTypes.includes(room.roomType)
       );
     }
 
+    // Price filter
     if (selectedPriceRanges.length > 0) {
       filtered = filtered.filter((room) =>
         selectedPriceRanges.some((range) => {
@@ -97,6 +104,7 @@ const AllRooms = () => {
       );
     }
 
+    // Sorting
     switch (selectedSort) {
       case "Price: Low to High":
         filtered.sort((a, b) => a.pricePerNight - b.pricePerNight);
@@ -118,20 +126,16 @@ const AllRooms = () => {
     }
 
     return filtered;
-  }, [selectedRoomTypes, selectedPriceRanges, selectedSort]);
+  }, [rooms, selectedRoomTypes, selectedPriceRanges, selectedSort, searchParam]);
 
   return (
     <div className="flex flex-col lg:flex-row pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32 gap-8">
 
-      {/* RIGHT (Mobile First): Filter Box */}
+      {/* FILTER SECTION */}
       <div className="bg-white w-80 border border-gray-300 text-gray-600 
         max-lg:mb-8 lg:mt-16 rounded-lg order-1 lg:order-2">
 
-        <div
-          className={`flex items-center justify-between px-5 py-2.5 border-gray-300 ${
-            openFilter ? "border-b" : ""
-          }`}
-        >
+        <div className={`flex items-center justify-between px-5 py-2.5 ${openFilter ? "border-b" : ""}`}>
           <p className="text-base font-medium text-gray-800">FILTERS</p>
 
           <div className="text-xs cursor-pointer">
@@ -144,14 +148,11 @@ const AllRooms = () => {
           </div>
         </div>
 
-        <div
-          className={`${
-            openFilter ? "h-auto" : "h-0 lg:h-auto"
-          } overflow-hidden transition-all duration-700`}
-        >
+        <div className={`${openFilter ? "h-auto" : "h-0 lg:h-auto"} overflow-hidden transition-all`}>
+
           {/* Room Types */}
           <div className="px-5 pt-5">
-            <p className="font-medium text-gray-800 pb-2">Popular Filters</p>
+            <p className="font-medium text-gray-800 pb-2">Room Type</p>
             {roomTypes.map((room, index) => (
               <Checkbox
                 key={index}
@@ -168,7 +169,7 @@ const AllRooms = () => {
             {priceRanges.map((range, index) => (
               <Checkbox
                 key={index}
-                label={`$ ${range}`}
+                label={`${currency} ${range}`}
                 selected={selectedPriceRanges.includes(range)}
                 onChange={togglePriceRange}
               />
@@ -187,77 +188,62 @@ const AllRooms = () => {
               />
             ))}
           </div>
+
         </div>
       </div>
 
-      {/* LEFT: Room List */}
+      {/* ROOMS LIST */}
       <div className="flex flex-col lg:w-3/4 order-2 lg:order-1">
-        <div className="flex flex-col items-start text-left mb-6">
-          <h1 className="font-playfair text-4xl md:text-[40px]">Hotel Rooms</h1>
-          <p className="text-sm md:text-base text-gray-500/90 mt-2 max-w-174">
-            Take Advantage of our Limited-time offers and special packages to
-            enhance your stay and create unforgettable memories.
+
+        <div className="mb-6">
+          <h1 className="text-4xl font-playfair">Hotel Rooms</h1>
+          <p className="text-gray-500 mt-2">
+            Discover amazing stays tailored to your preferences.
           </p>
         </div>
 
-        {/* Room List */}
         <div className="flex flex-col gap-6">
           {filteredRooms.map((room) => (
-            <div
-              key={room._id}
-              className="flex flex-col md:flex-row items-start py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0"
-            >
+            <div key={room._id} className="flex flex-col md:flex-row gap-6 border-b pb-6">
+
               <img
+                src={room.images[0]}
+                className="md:w-1/2 rounded-xl cursor-pointer"
                 onClick={() => {
                   navigate(`/rooms/${room._id}`);
-                  scrollTo(0, 0);
+                  window.scrollTo(0, 0);
                 }}
-                src={room.images[0]}
-                alt="hotel-img"
-                className="max-h-65 md:w-1/2 rounded-xl shadow-lg object-cover cursor-pointer"
               />
 
               <div className="md:w-1/2 flex flex-col gap-2">
                 <p className="text-gray-500">{room.hotel.city}</p>
+                <h2 className="text-2xl font-semibold">{room.hotel.name}</h2>
 
-                <p
-                  className="text-gray-800 text-3xl font-playfair cursor-pointer"
-                  onClick={() => navigate(`/rooms/${room._id}`)}
-                >
-                  {room.hotel.name}
-                </p>
-
-                <div className="flex items-center">
-                  <StarRating />
-                  <p className="ml-2">200+ reviews</p>
+                <div className="flex items-center gap-2">
+                  <StarRating rating={room.rating} />
+                  <span>{room.rating}</span>
                 </div>
 
-                <div className="flex items-center gap-1 text-gray-500 mt-2 text-sm">
-                  <img src={assets.locationIcon} alt="location" />
-                  <span>{room.hotel.address}</span>
-                </div>
+                <p className="text-sm text-gray-500">{room.hotel.address}</p>
 
-                <div className="flex flex-wrap items-center mt-3 mb-6 gap-4">
-                  {room.amenities.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5F5FF]/70"
-                    >
-                      <img src={facilityIcons[item]} alt={item} className="w-5 h-5" />
-                      <p className="text-xs">{item}</p>
-                    </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {room.amenities.map((item, i) => (
+                    <span key={i} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                      {item}
+                    </span>
                   ))}
                 </div>
 
-                <p className="text-xl font-medium text-gray-700">
-                  ${room.pricePerNight}/night
+                <p className="text-xl font-bold mt-2">
+                  {currency} {room.pricePerNight}/night
                 </p>
               </div>
+
             </div>
           ))}
         </div>
-      </div>
 
+      </div>
     </div>
   );
 };

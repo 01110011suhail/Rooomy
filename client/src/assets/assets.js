@@ -106,9 +106,46 @@ export const exclusiveOffers = [
 
 // Testimonials Dummy Data
 export const testimonials = [
-    { id: 1, name: "Emma Rodriguez", address: "Barcelona, Spain", image: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200", rating: 5, review: "I've used many booking platforms before, but none compare to the personalized experience and attention to detail that QuickStay provides." },
-    { id: 2, name: "Liam Johnson", address: "New York, USA", image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200", rating: 4, review: "QuickStay exceeded my expectations. The booking process was seamless, and the hotels were absolutely top-notch. Highly recommended!" },
-    { id: 3, name: "Sophia Lee", address: "Seoul, South Korea", image: "https://images.unsplash.com/photo-1701615004837-40d8573b6652?q=80&w=200", rating: 5, review: "Amazing service! I always find the best luxury accommodations through QuickStay. Their recommendations never disappoint!" }
+  { 
+    id: 1, 
+    name: "Olivia Martinez", 
+    address: "Lisbon, Portugal", 
+    image: "https://images.unsplash.com/photo-1620139467482-905cc0f1e9f8?q=80&w=200", 
+    rating: 5, 
+    review: "QuickStay made my vacation effortless. The recommendations were spot-on and every stay felt personal and luxurious." 
+  },
+  { 
+    id: 2, 
+    name: "Ethan Brown", 
+    address: "Toronto, Canada", 
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200", 
+    rating: 4, 
+    review: "Booking was super smooth and the hotels exceeded expectations. QuickStay truly takes care of its customers." 
+  },
+  { 
+    id: 3, 
+    name: "Ava Kim", 
+    address: "Seoul, South Korea", 
+    image: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=200", 
+    rating: 5, 
+    review: "Every trip I’ve booked with QuickStay has been seamless and memorable. The service is top-tier!" 
+  },
+  { 
+    id: 4, 
+    name: "Noah Wilson", 
+    address: "Sydney, Australia", 
+    image: "https://images.unsplash.com/photo-1603415526960-f8f2f0a0e09f?q=80&w=200", 
+    rating: 5, 
+    review: "I love how QuickStay curates hotels that fit my style. Each stay feels like a premium experience." 
+  },
+  { 
+    id: 5, 
+    name: "Isabella Rossi", 
+    address: "Rome, Italy", 
+    image: "https://images.unsplash.com/photo-1614284649504-d7d7d54b6ec9?q=80&w=200", 
+    rating: 4, 
+    review: "Excellent platform! QuickStay made my travel planning easy, and the hotel quality was consistently excellent." 
+  }
 ];
 
 // Facility Icon

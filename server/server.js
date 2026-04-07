@@ -23,18 +23,18 @@ connectCloudinary();
 app.use(cors());
 
 // ✅ ADD THIS LINE (VERY IMPORTANT)
-app.use(clerkMiddleware());
 
 // Clerk webhook (raw)
 app.post("/api/clerk", express.raw({ type: "application/json" }), clerkWebhooks);
 
 app.use(express.json());
+app.use(clerkMiddleware());
 
 app.get("/", (req, res) => res.send("API is working"));
 
 app.use("/api/user", userRouter);
 app.use("/api/hotels", hotelRouter);
 app.use("/api/rooms", roomRouter);
-app.use("/api/booking", bookingRouter);
+app.use("/api/bookings", bookingRouter);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

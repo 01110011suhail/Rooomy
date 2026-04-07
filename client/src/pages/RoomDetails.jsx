@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { facilityIcons, roomCommonData, roomsDummyData, assets } from "../assets/assets";
-import StarRating from "../components/StarRating";
 import { useParams } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
+import StarRating from "../components/StarRating";
+import { assets, facilityIcons, roomCommonData } from "../assets/assets";
 
 const RoomDetails = () => {
   const { id } = useParams();
+  const { rooms, axios, getToken, navigate } = useAppContext();
+
   const [room, setRoom] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [guests, setGuests] = useState(1);
+  const [isAvailable, setIsAvailable] = useState(false);
 
-  // Date calculations
+  // Date limits
   const today = new Date();
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 45);
@@ -26,45 +31,67 @@ const RoomDetails = () => {
   const minDateStr = formatDate(today);
   const maxDateStr = formatDate(maxDate);
 
-  // Fetch room data
+  // Fetch room from context
   useEffect(() => {
-    const roomData = roomsDummyData.find((r) => r._id === id);
+    const roomData = rooms.find((r) => r._id === id);
     if (roomData) {
       setRoom(roomData);
       setMainImage(roomData.images?.[0] || null);
     }
-  }, [id]);
+  }, [rooms, id]);
 
-  if (!room) {
-    return <div className="py-32 text-center text-xl">Loading room details...</div>;
-  }
+  if (!room) return <div className="py-32 text-center text-xl">Loading room details...</div>;
 
-  // Booking form submit
-  const handleBooking = (e) => {
+  // Check room availability
+  const checkAvailability = async () => {
+    if (!checkInDate || !checkOutDate) return toast.error("Please select both check-in and check-out dates.");
+
+    try {
+      const { data } = await axios.post(`/api/rooms/${id}/check-availability`, { checkInDate, checkOutDate });
+      setIsAvailable(data.isAvailable);
+      if (data.isAvailable) toast.success("Room is available!");
+      else toast.error("Room is not available for the selected dates.");
+    } catch (error) {
+      console.error("Error checking availability:", error);
+      toast.error("Failed to check availability.");
+    }
+  };
+
+  // Booking handler
+  const handleBooking = async (e) => {
     e.preventDefault();
-    if (!checkInDate || !checkOutDate) {
-      alert("Please select both check-in and check-out dates.");
-      return;
+
+    if (!checkInDate || !checkOutDate) return toast.error("Select both check-in and check-out dates.");
+    if (!isAvailable) return checkAvailability();
+
+    try {
+      const token = await getToken();
+      const { data } = await axios.post(
+        `/api/rooms/book`,
+        { roomId: id, checkInDate, checkOutDate, guests, paymentMethod: "pay at hotel" },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        toast.success("Booking successful!");
+        navigate("/my-bookings");
+        window.scrollTo(0, 0);
+      } else {
+        toast.error(data.message || "Failed to book the room.");
+      }
+    } catch (error) {
+      toast.error("Booking failed. Please try again.");
     }
-    if (guests < 1) {
-      alert("Guests must be at least 1.");
-      return;
-    }
-    console.log("Booking:", { checkInDate, checkOutDate, guests });
   };
 
   return (
     <div className="py-28 md:py-36 px-4 md:px-16 lg:px-24 xl:px-32 space-y-10">
-
       {/* Room Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
         <h1 className="text-3xl md:text-4xl font-playfair">
-          {room.hotel.name}
-          <span className="font-inter text-sm"> ({room.roomType})</span>
+          {room.hotel.name} <span className="font-inter text-sm">({room.roomType})</span>
         </h1>
-        <p className="text-xs font-inter py-1.5 px-3 text-white bg-orange-500 rounded-full">
-          20% OFF
-        </p>
+        <p className="text-xs font-inter py-1.5 px-3 text-white bg-orange-500 rounded-full">20% OFF</p>
       </div>
 
       {/* Rating */}
@@ -105,7 +132,7 @@ const RoomDetails = () => {
         </div>
       </div>
 
-      {/* Highlights & Price */}
+      {/* Amenities & Price */}
       <div className="flex flex-col md:flex-row md:justify-between mt-10 items-start md:items-center gap-6">
         <div>
           <h2 className="text-3xl md:text-4xl font-playfair">Experience Luxury Like Never Before</h2>
@@ -128,50 +155,45 @@ const RoomDetails = () => {
       >
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500 w-full">
           <div className="flex flex-col w-full md:w-auto">
-            <label htmlFor="checkInDate" className="font-medium">Check-In</label>
+            <label className="font-medium">Check-In</label>
             <input
               type="date"
-              id="checkInDate"
-              className="w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
-              required
+              value={checkInDate}
+              onChange={(e) => setCheckInDate(e.target.value)}
               min={minDateStr}
               max={maxDateStr}
-              value={checkInDate}
-              onChange={(e) => {
-                setCheckInDate(e.target.value);
-                if (checkOutDate && e.target.value > checkOutDate) setCheckOutDate("");
-              }}
-            />
-          </div>
-
-          <div className="w-px h-15 bg-gray-300/70 hidden md:block"></div>
-
-          <div className="flex flex-col w-full md:w-auto">
-            <label htmlFor="checkOutDate" className="font-medium">Check-Out</label>
-            <input
-              type="date"
-              id="checkOutDate"
               className="w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
               required
-              min={checkInDate || minDateStr}
-              max={maxDateStr}
-              value={checkOutDate}
-              onChange={(e) => setCheckOutDate(e.target.value)}
             />
           </div>
 
           <div className="w-px h-15 bg-gray-300/70 hidden md:block"></div>
 
           <div className="flex flex-col w-full md:w-auto">
-            <label htmlFor="guests" className="font-medium">Guests</label>
+            <label className="font-medium">Check-Out</label>
+            <input
+              type="date"
+              value={checkOutDate}
+              onChange={(e) => setCheckOutDate(e.target.value)}
+              min={checkInDate || minDateStr}
+              max={maxDateStr}
+              className="w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
+              disabled={!checkInDate}
+              required
+            />
+          </div>
+
+          <div className="w-px h-15 bg-gray-300/70 hidden md:block"></div>
+
+          <div className="flex flex-col w-full md:w-auto">
+            <label className="font-medium">Guests</label>
             <input
               type="number"
-              id="guests"
               min="1"
-              className="max-w-[80px] rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
               value={guests}
+              onChange={(e) => setGuests(e.target.value)}
+              className="max-w-[80px] rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
               required
-              onChange={(e) => setGuests(Math.max(1, parseInt(e.target.value) || 1))}
             />
           </div>
         </div>
@@ -180,11 +202,11 @@ const RoomDetails = () => {
           type="submit"
           className="bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md md:px-10 py-3 w-full md:w-auto mt-4 md:mt-0"
         >
-          Check Availability
+          {isAvailable ? "Book Now" : "Check Availability"}
         </button>
       </form>
 
-      {/* Common Description */}
+      {/* Common Room Description */}
       <div className="space-y-4">
         {roomCommonData.map((spec, idx) => (
           <div key={idx} className="flex items-start gap-2">
@@ -197,13 +219,6 @@ const RoomDetails = () => {
         ))}
       </div>
 
-      {/* Info Section */}
-      <div className="max-w-3xl border-y border-gray-300 my-10 py-10 text-gray-500">
-        <p>
-          Guests will be allocated on the ground floor to ensure a comfortable and convenient stay...
-        </p>
-      </div>
-
       {/* Hosted By Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mt-10">
         <div className="flex gap-4 items-center">
@@ -213,7 +228,7 @@ const RoomDetails = () => {
             className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover"
           />
           <div>
-            <p className="text-lg md:text-xl font-medium">Hosted by {room.hotel.owner.name}</p>
+            <p className="text-lg md:text-xl font-medium">Hosted by {room.hotel.owner.username}</p>
             <div className="flex items-center mt-1">
               <StarRating />
               <span className="ml-2 text-gray-500">(200+ reviews)</span>
@@ -224,7 +239,6 @@ const RoomDetails = () => {
           Contact Now
         </button>
       </div>
-
     </div>
   );
 };

@@ -3,67 +3,115 @@ import { assets } from '../assets/assets'
 
 const Footer = () => {
   return (
-<div className='bg-[#F6F9FC] text-gray-500/80 pt-8 px-6 md:px-16 lg:px-24 xl:px-32'>
-            <div className='flex flex-wrap justify-between gap-12 md:gap-6'>
-                <div className='max-w-80'>
-                    <img src={assets.logo} alt="logo" className='mb-4 h-8 md:h-9 invert opacity-80' />
-                    <p className='text-sm'>
-                        Discover the epitome of luxury and comfort with our exquisite hotel, where every stay is a memorable experience.
-                    </p>
-                    <div className='flex items-center gap-3 mt-4'>
-                        <img src={assets.facebookIcon} alt="facebook-icon" className='w-5 h-5 hover:opacity-80 transition-all cursor-pointer' />
-                        <img src={assets.twitterIcon} alt="twitter-icon" className='w-5 h-5 hover:opacity-80 transition-all cursor-pointer' />
-                        <img src={assets.instagramIcon} alt="instagram-icon" className='w-5 h-5 hover:opacity-80 transition-all cursor-pointer' />
-                        <img src={assets.linkendinIcon} alt="linkedin-icon" className='w-5 h-5 hover:opacity-80 transition-all cursor-pointer' />
-                    </div>
-                </div>
+    <div className="bg-gradient-to-b from-[#F6F9FC] to-white text-gray-600">
 
-                <div>
-                    <p className='font-playfair text-lg text-gray-800'>COMPANY</p>
-                    <ul className='mt-3 flex flex-col gap-2 text-sm'>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Partners</a></li>
-                    </ul>
-                </div>
+      {/* 🔁 MARQUEE */}
+      <div className="overflow-hidden border-y border-gray-200 py-3 bg-white">
+        <div className="whitespace-nowrap animate-marquee text-lg md:text-xl font-semibold text-gray-800 tracking-wide">
+          ✦ Luxury Stays ✦ Exclusive Offers ✦ Premium Comfort ✦ Unforgettable Experiences ✦
+        </div>
+      </div>
 
-                <div>
-                    <p className='font-playfair text-lg text-gray-800'>SUPPORT</p>
-                    <ul className='mt-3 flex flex-col gap-2 text-sm'>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Safety Information</a></li>
-                        <li><a href="#">Cancellation Options</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Accessibility</a></li>
-                    </ul>
-                </div>
+      {/* MAIN */}
+      <div className='pt-16 px-6 md:px-16 lg:px-24 xl:px-32'>
 
-                <div className='max-w-80'>
-                    <p className='font-playfair text-lg text-gray-800'>STAY UPDATED</p>
-                    <p className='mt-3 text-sm'>
-                        Subscribe to our newsletter for inspiration and special offers.
-                    </p>
-                    <div className='flex items-center mt-4'>
-                        <input type="text" className='bg-white rounded-l border border-gray-300 h-9 px-3 outline-none' placeholder='Your email' />
-                        <button className='flex items-center justify-center bg-black h-9 w-9 aspect-square rounded-r'>
-                            {/* Arrow icon */}
-                            <img src={assets.arrowIcon} alt="arrow-icon" className='w-3.5 invert' />
-                        </button>
-                    </div>
-                </div>
+        {/* TOP GRID */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12'>
+
+          {/* BRAND */}
+          <div>
+            <img src={assets.logo} alt="logo" className='mb-5 h-9 opacity-80' />
+            <p className='text-sm leading-relaxed'>
+              Discover refined stays, curated experiences, and timeless luxury — crafted for travelers who expect more.
+            </p>
+
+            <div className='flex gap-4 mt-5'>
+              {[assets.facebookIcon, assets.twitterIcon, assets.instagramIcon, assets.linkendinIcon].map((icon, i) => (
+                <img key={i} src={icon} className='w-5 cursor-pointer hover:scale-110 hover:opacity-80 transition duration-300' />
+              ))}
             </div>
-            <hr className='border-gray-300 mt-8' />
-            <div className='flex flex-col md:flex-row gap-2 items-center justify-between py-5'>
-                <p>© {new Date().getFullYear()} Roomy. All rights reserved.</p>
-                <ul className='flex items-center gap-4'>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Terms</a></li>
-                    <li><a href="#">Sitemap</a></li>
-                </ul>
+          </div>
+
+          {/* COMPANY */}
+          <div>
+            <p className='font-playfair text-lg text-gray-900 mb-4'>Company</p>
+            <ul className='space-y-2 text-sm'>
+              {["About", "Careers", "Press", "Blog", "Partners"].map((item, i) => (
+                <li key={i}>
+                  <a href="#" className="hover:text-black transition">{item}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* SUPPORT */}
+          <div>
+            <p className='font-playfair text-lg text-gray-900 mb-4'>Support</p>
+            <ul className='space-y-2 text-sm'>
+              {["Help Center", "Safety Info", "Cancellation", "Contact"].map((item, i) => (
+                <li key={i}>
+                  <a href="#" className="hover:text-black transition">{item}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* NEWSLETTER */}
+          <div className='bg-white/70 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-gray-200'>
+            <p className='font-playfair text-lg text-gray-900'>Stay Updated</p>
+            <p className='mt-2 text-sm'>
+              Get exclusive deals and luxury travel inspiration.
+            </p>
+
+            <div className='mt-5 flex items-center border border-gray-300 rounded-full overflow-hidden'>
+              <input 
+                type="email"
+                placeholder='Enter your email'
+                className='px-4 py-2 w-full text-sm outline-none bg-transparent'
+              />
+              <button className='bg-black text-white px-5 py-2 text-sm hover:bg-gray-800 transition'>
+                Join
+              </button>
             </div>
-        </div>  )
+          </div>
+
+        </div>
+
+        {/* DIVIDER */}
+        <div className='mt-14 border-t border-gray-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm'>
+
+          <p className='text-gray-500'>
+            © {new Date().getFullYear()} Roomy. Crafted for luxury living.
+          </p>
+
+          <div className='flex gap-6'>
+            {["Privacy", "Terms", "Sitemap"].map((item, i) => (
+              <a key={i} href="#" className="hover:text-black transition">{item}</a>
+            ))}
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* 🔧 ANIMATION */}
+      <style>
+        {`
+          .animate-marquee {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+          }
+
+          @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+          }
+        `}
+      </style>
+
+    </div>
+  )
 }
 
 export default Footer
