@@ -13,7 +13,8 @@ import AddRoom from './pages/hotelOwner/AddRoom.jsx';
 import ListRoom from './pages/hotelOwner/ListRoom.jsx';
 import {Toaster} from 'react-hot-toast';
 import { useAppContext } from './context/AppContext.jsx';
-
+import About from './components/About.jsx';
+   
 const App = () => {
   const location = useLocation(); // <-- Fix: useLocation hook
   const isOwnerPath = location.pathname.includes("owner");
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/rooms" element={<AllRooms />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
+          <Route path="/about" element={<About />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/owner" element={<Layout />} >
               <Route index element={<Dashboard />} />

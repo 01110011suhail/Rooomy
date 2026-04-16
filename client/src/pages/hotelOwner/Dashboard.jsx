@@ -22,9 +22,9 @@ const Dashboard = () => {
 
         if (data.success) {
           setDashboardData({
-            totalBookings: data.data.recentSearchCities.length, // or actual booking count from backend
-            totalRevenue: data.data.totalRevenue || 0, // replace with real field if exists
-            bookings: data.data.bookings || [], // replace with real bookings array from backend
+            totalBookings: data.data.recentSearchCities.length,
+            totalRevenue: data.data.totalRevenue || 0,
+            bookings: data.data.bookings || [],
           });
         } else {
           toast.error('Failed to fetch dashboard data');
@@ -39,66 +39,78 @@ const Dashboard = () => {
   }, [axios, getToken]);
 
   return (
-    <div>
+    <div className="p-4">
       <Title
-        align='left'
-        font='outfit'
-        title='Dashboard'
-        subTitle='Monitor your room listings, track bookings, and analyze revenue in one place.'
+        align="left"
+        font="outfit"
+        title="Dashboard"
+        subTitle="Monitor your room listings, track bookings, and analyze revenue in one place."
       />
 
-      <div className='flex gap-4 my-8'>
-        <div className='bg-primary/3 border border-primary/10 rounded flex p-4 pr-8'>
-          <div className='flex flex-col sm:ml-4 font-medium'>
-            <p className='text-blue-500 text-lg'>Total Bookings</p>
-            <p className='text-neutral-400 text-base'>{dashboardData.totalBookings}</p>
+      {/* Metrics Cards */}
+      <div className="flex flex-wrap gap-6 my-8">
+        <div className="bg-white shadow-md border border-gray-200 rounded-lg flex items-center p-6 w-full sm:w-1/2 md:w-1/3">
+          <div className="bg-blue-100 p-3 rounded-full">
+            <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 3h2v14H3V3zm4 0h2v14H7V3zm4 0h2v14h-2V3zm4 0h2v14h-2V3z" />
+            </svg>
+          </div>
+          <div className="ml-4">
+            <p className="text-gray-500 text-sm">Total Bookings</p>
+            <p className="text-gray-900 font-semibold text-lg">{dashboardData.totalBookings}</p>
           </div>
         </div>
-        <div className='bg-primary/3 border border-primary/10 rounded flex p-4 pr-8'>
-          <div className='flex flex-col sm:ml-4 font-medium'>
-            <p className='text-blue-500 text-lg'>Total Revenue</p>
-            <p className='text-neutral-400 text-base'>$ {dashboardData.totalRevenue}</p>
+
+        <div className="bg-white shadow-md border border-gray-200 rounded-lg flex items-center p-6 w-full sm:w-1/2 md:w-1/3">
+          <div className="bg-green-100 p-3 rounded-full">
+            <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z" />
+            </svg>
+          </div>
+          <div className="ml-4">
+            <p className="text-gray-500 text-sm">Total Revenue</p>
+            <p className="text-gray-900 font-semibold text-lg">$ {dashboardData.totalRevenue}</p>
           </div>
         </div>
       </div>
 
-      <h2 className='w-full max-w-3xl text-left border border-gray-300 rounded-lg max-h-80 overflow-y-scroll'>
-        Recent Bookings
-      </h2>
-      <table className='w-full'>
-        <thead className='bg-gray-50'>
-          <tr>
-            <th className='py-3 px-4 text-gray-800 font-medium'>User Name</th>
-            <th className='py-3 px-4 text-gray-800 font-medium max-sm:hidden'>Room Name</th>
-            <th className='py-3 px-4 text-gray-800 font-medium text-center'>Total Amount</th>
-            <th className='py-3 px-4 text-gray-800 font-medium text-center'>Payment Status</th>
-          </tr>
-        </thead>
-        <tbody className='text-sm'>
-          {dashboardData.bookings.map((item, index) => (
-            <tr key={index}>
-              <td className='py-3 px-4 text-gray-700 border-t border-gray-300'>
-                {item.user?.username}
-              </td>
-              <td className='py-3 px-4 text-gray-700 border-t border-gray-300 max-sm:hidden'>
-                {item.room?.roomType}
-              </td>
-              <td className='py-3 px-4 text-gray-700 border-t border-gray-300 text-center'>
-                $ {item.totalPrice}
-              </td>
-              <td className='py-3 px-4 border-t border-gray-300 flex justify-center'>
-                <button
-                  className={`py-1 px-3 text-xs rounded-full ${
-                    item.isPaid ? 'bg-green-200 text-green-600' : 'bg-amber-200 text-yellow-600'
-                  }`}
-                >
-                  {item.isPaid ? 'Completed' : 'Pending'}
-                </button>
-              </td>
+      {/* Recent Bookings Table */}
+      <h2 className="text-lg font-semibold mb-4">Recent Bookings</h2>
+      <div className="overflow-x-auto rounded-lg shadow-sm">
+        <table className="min-w-full border-collapse">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="py-3 px-4 text-left text-gray-700 font-medium">User Name</th>
+              <th className="py-3 px-4 text-left text-gray-700 font-medium max-sm:hidden">Room Name</th>
+              <th className="py-3 px-4 text-center text-gray-700 font-medium">Total Amount</th>
+              <th className="py-3 px-4 text-center text-gray-700 font-medium">Payment Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="text-sm">
+            {dashboardData.bookings.map((item, index) => (
+              <tr
+                key={index}
+                className={`border-t border-gray-200 hover:bg-gray-50 ${
+                  index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                }`}
+              >
+                <td className="py-3 px-4 text-gray-700">{item.user?.username}</td>
+                <td className="py-3 px-4 text-gray-700 max-sm:hidden">{item.room?.roomType}</td>
+                <td className="py-3 px-4 text-center text-gray-700">$ {item.totalPrice}</td>
+                <td className="py-3 px-4 text-center">
+                  <span
+                    className={`inline-block py-1 px-3 text-xs rounded-full ${
+                      item.isPaid ? 'bg-green-200 text-green-600' : 'bg-yellow-200 text-yellow-600'
+                    }`}
+                  >
+                    {item.isPaid ? 'Completed' : 'Pending'}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
