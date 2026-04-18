@@ -111,6 +111,7 @@ const ListRoom = () => {
                   <td className="py-3 px-6">₹{room.pricePerNight?.toLocaleString() || 0}</td>
 
                   {/* Toggle Availability */}
+                  {/* Toggle Availability */}
                   <td className="py-3 px-6 text-center">
                     <label className="relative inline-flex items-center cursor-pointer gap-2">
                       <input

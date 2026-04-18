@@ -14,7 +14,7 @@ import ListRoom from './pages/hotelOwner/ListRoom.jsx';
 import {Toaster} from 'react-hot-toast';
 import { useAppContext } from './context/AppContext.jsx';
 import About from './components/About.jsx';
-   
+         
 const App = () => {
   const location = useLocation(); // <-- Fix: useLocation hook
   const isOwnerPath = location.pathname.includes("owner");
